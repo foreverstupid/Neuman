@@ -156,51 +156,19 @@ static inline void comp_mul(fftw_complex *f, const fftw_complex *g)
 
 
 //get convolution of two functions
-double *convolve(double *f, double *g)
+double *convolve(double *f, Func g)
 {
-	fftw_complex *tmp1 = fftw_alloc_complex(N_COUNT);
-	fftw_complex *tmp2 = fftw_alloc_complex(N_COUNT);
-	double *result = malloc(sizeof(double) * N_COUNT);
-	fftw_plan pf1;
-	fftw_plan pf2;
-	fftw_plan pb;
-
-	pf1 = fftw_plan_dft_r2c_1d(N_COUNT, f, tmp1, FFTW_ESTIMATE);
-	pf2 = fftw_plan_dft_r2c_1d(N_COUNT, g, tmp2, FFTW_ESTIMATE);
-	pb = fftw_plan_dft_c2r_1d(N_COUNT, tmp1, result, FFTW_ESTIMATE);
-
-	fftw_execute(pf1);
-	fftw_execute(pf2);
-	comp_mul(tmp1, tmp2);
-	fftw_execute(pb);
-
-	fftw_destroy_plan(pf1);
-	fftw_destroy_plan(pf2);
-	fftw_destroy_plan(pb);
-	
-	fftw_free(tmp2);
-	fftw_free(tmp1);
-	mul(result, step/N_COUNT);
-
-	return result;
-}
-
-
-
-/*return n*n convolution */
-double *true_conv(double *f, double *M)
-{
+	double *res = malloc(sizeof(double) * N_COUNT);
 	int i;
 	int j;
-	double *res = malloc(sizeof(double) * N_COUNT);
 	double x = -R;
 	double y;
 
 	for(i = 0; i < N_COUNT; i++){
 		y = -R;
-		res[i] = 0;
+		res[i] = 0.0;
 		for(j = 0; j < N_COUNT; j++){
-			res[i] += weight(j) * f[j] * m(x - y);
+			res[i] += weight(j) * f[j] * g(x -y); 
 			y += step;
 		}
 		x += step;
@@ -222,12 +190,12 @@ void twin_iterate(double **Cn, double **Cn_1, double *M, double *W,
 	*Cn = *Cn_1;
 	*Cn_1 = conv;
 
-	conv = convolve(*Cn_1, M);
+	conv = convolve(*Cn_1, &m);
 
 	for(i = 0; i < N_COUNT; i++){
 		bswx = b + s*W[i];
-		(*Cn)[i] = (b*conv[(i + N_COUNT/2)%N_COUNT] + M[i]*N -
-			s*W[i]) / bswx;
+		(*Cn)[i] = (b*conv[i] + M[i]*N +
+			s*(M[i]*nw - W[i])) / bswx;
 	}
 
 	free(conv);
@@ -354,15 +322,29 @@ int main()
 	double *W = get_vector(&w);			//kernel w in vector form
 	double *M = get_vector(&m);			//kernel m in vector form
 	double *solution;
+	double *h;
+	double *g;
+	double N;
 	double nw = get_dot(W, NULL);
 
-	solution = get_solution(2.0/3*B + 52.0/27*A, M, W, nw);
+	printf("***Getting g(x)...\n");
+	g = get_solution(0, M, W, nw);
+
+	printf("***Getting h(x)...\n");
+	h = get_solution(1, M, W, nw);
+
+	printf("***Getting solution...\n");
+	N = get_dot(W, g);
+	N = -N / (get_dot(W, h) - 1 - N);
+	solution = get_solution(N, M, W, nw);
 
 	printf("\nError: %20.10lf\n", get_relative_error(solution, &sol));
 	store_solution(solution);
 
 	free(M);
 	free(W);
+	free(h);
+	free(g);
 	free(solution);
 
 	return 0;
