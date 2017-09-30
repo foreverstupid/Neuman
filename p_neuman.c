@@ -12,7 +12,7 @@
 #endif
 
 #ifndef ITERS
-#define ITERS 1000 				//iterations of solving
+#define ITERS 1000 			//iterations of solving
 #endif
 
 #ifndef BAR_WIDTH
@@ -25,13 +25,13 @@
 typedef double (*Func)(double);		//type of function
 
 const double R = 20;			//limit of integration
-const double b = 1;				//birth coeff
-const double s = 1;				//death coeff
-const double A = 2;				//kernel parameters
-const double B = 1;				
-double step;					//step of nodes
+const double b = 1;			//birth coeff
+const double s = 1;			//death coeff
+const double A = 2;			//kernel parameters
+const double B = 1;
+double step;				//step of nodes
 #ifdef SHOUT
-int sharps = 0;					//for progress bar
+int sharps = 0;				//for progress bar
 #endif
 
 
@@ -110,12 +110,12 @@ double get_dot(const double *C, const double *W)
 	double res = 0;
 	int i;
 
-	if(W == NULL){
-		for(i = 0; i < N_COUNT; i++){
-			res += C[i]*weight(i);
+	if (W == NULL) {
+		for (i = 0; i < N_COUNT; i++) {
+			res += C[i] * weight(i);
 		}
-	}else{
-		for(i = 0; i < N_COUNT; i++){
+	} else {
+		for (i = 0; i < N_COUNT; i++){
 			res += W[i] * C[i] * weight(i);
 		}
 	}
@@ -130,7 +130,7 @@ void mul(double *v, double fact)
 {
 	int i;
 
-	for(i = 0; i < N_COUNT; i++){
+	for(i = 0; i < N_COUNT; i++) {
 		v[i] *= fact;
 	}
 }
@@ -144,7 +144,7 @@ static inline void comp_mul(fftw_complex *f, const fftw_complex *g)
 	double im;
 	int i;
 
-	for(i = 0; i < N_COUNT; i++){
+	for (i = 0; i < N_COUNT; i++) {
 		re = f[i][0] * g[i][0] - f[i][1] * g[i][1];
 		im = f[i][0] * g[i][1] + f[i][1] * g[i][0];
 		
@@ -200,7 +200,7 @@ void twin_iterate(double **Cn, double **Cn_1, double *M, double *W,
 
 	conv = convolve(*Cn_1, M);
 
-	for(i = 0; i < N_COUNT; i++){
+	for (i = 0; i < N_COUNT; i++){
 		bswx = b + s*W[i];
 		(*Cn)[i] = (b*conv[(i+(N_COUNT/2))%N_COUNT] + M[i]*N +
 			s*(M[i]*nw- W[i])) / bswx;
@@ -218,9 +218,9 @@ double get_diff(const double *Cn, const double *Cn_1)
 	double max = 0;
 	int i;
 
-	for(i = 0; i < N_COUNT; i++){
+	for (i = 0; i < N_COUNT; i++) {
 		curr = fabs(Cn[i] - Cn_1[i]);
-		if(curr > max){
+		if (curr > max) {
 			max = curr;
 		}
 	}
@@ -300,7 +300,7 @@ double *get_solution(double N, double *M, double *W, double nw)
 #		ifndef SHOUT
 		printf("Iteration: %i\nDifference: %20.7f\n",i,get_diff(Cn, Cn_1));
 #		else
-		while(sharps < (double)BAR_WIDTH * i / ITERS){
+		while (sharps < (double)BAR_WIDTH * i / ITERS) {
 			putchar('#');
 			sharps++;
 		}
@@ -325,9 +325,10 @@ double *get_solution(double N, double *M, double *W, double nw)
 
 int main()
 {
+        printf("GRID COUNT: %d | ITERATIONS %d \n", N_COUNT, ITERS);
 	step = 2 * R / (N_COUNT - 1);
-	double *W = get_vector(&w);			//kernel w in vector form
-	double *M = get_vector(&m);			//kernel m in vector form
+	double *W = get_vector(&w);			// kernel w in vector form
+	double *M = get_vector(&m);			// kernel m in vector form
 	double *solution;
 	double *h;
 	double *g;
