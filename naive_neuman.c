@@ -125,36 +125,6 @@ double get_dot(const double *C, const double *W)
 
 
 
-//multiply vector by factor
-void mul(double *v, double fact)
-{
-	int i;
-
-	for(i = 0; i < N_COUNT; i++){
-		v[i] *= fact;
-	}
-}
-
-
-
-//multiply two complex vectors storing result in the first one
-static inline void comp_mul(fftw_complex *f, const fftw_complex *g)
-{
-	double re;
-	double im;
-	int i;
-
-	for(i = 0; i < N_COUNT; i++){
-		re = f[i][0] * g[i][0] - f[i][1] * g[i][1];
-		im = f[i][0] * g[i][1] + f[i][1] * g[i][0];
-		
-		f[i][0] = re;
-		f[i][1] = im;
-	}
-}
-
-
-
 //get convolution of two functions
 double *convolve(double *f, Func g)
 {
@@ -199,25 +169,6 @@ void twin_iterate(double **Cn, double **Cn_1, double *M, double *W,
 	}
 
 	free(conv);
-}
-
-
-
-//get C-norm of difference of two function
-double get_diff(const double *Cn, const double *Cn_1)
-{
-	double curr;
-	double max = 0;
-	int i;
-
-	for(i = 0; i < N_COUNT; i++){
-		curr = fabs(Cn[i] - Cn_1[i]);
-		if(curr > max){
-			max = curr;
-		}
-	}
-
-	return max;
 }
 
 
