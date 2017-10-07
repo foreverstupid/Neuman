@@ -60,7 +60,7 @@ static inline double m(double x)
 //origin function
 static inline double origin(double x)
 {
-	return 0.0;
+    return 0.0;
 }
 
 
@@ -150,24 +150,24 @@ static inline void comp_mul(fftw_complex *f, const fftw_complex *g, int n)
 
 
 //fourier convolution for vectors F and G with the next features:
-//	1. size of F=2*size, size of G=size
-//	2. we pade G by zeros to extend it to size 2*size
-//	3. result size is 2*size, but only points [size, 2*size] matters for us
+//  1. size of F=2*size, size of G=size
+//  2. we pade G by zeros to extend it to size 2*size
+//  3. result size is 2*size, but only points [size, 2*size] matters for us
 double *fourier_conv(double *F, double *G, int size)
 {
-	double *g1 = malloc(sizeof(double) * 2 * size);
+    double *g1 = malloc(sizeof(double) * 2 * size);
     fftw_complex *tmp1 = fftw_alloc_complex(size + 1);
     fftw_complex *tmp2 = fftw_alloc_complex(size + 1);
     double *result = malloc(sizeof(double) * 2 * size);
-	int i;
+    int i;
 
-	for(i = 0; i < size; i++){
-		g1[i] = G[i];
-	}
+    for(i = 0; i < size; i++){
+        g1[i] = G[i];
+    }
 
-	for(; i < 2*size; i++){
-		g1[i] = 0.0;
-	}
+    for(; i < 2*size; i++){
+        g1[i] = 0.0;
+    }
 
     fftw_plan pF;
     fftw_plan pf2;
@@ -188,7 +188,7 @@ double *fourier_conv(double *F, double *G, int size)
     
     fftw_free(tmp2);
     fftw_free(tmp1);
-	free(g1);
+    free(g1);
     mul(result, step/(size * 2), size * 2);
 
     return result;
@@ -338,8 +338,8 @@ double *get_solution(double N, double *M, double *W, double nw)
 int main()
 {
     step = 2 * R / (N_COUNT - 1);
-    double *W = get_vector(&w, N_COUNT, -R, step);		//kernel w
-    double *M = get_vector(&m, 2*N_COUNT, -2*R, step);	//kernel m
+    double *W = get_vector(&w, N_COUNT, -R, step);      //kernel w
+    double *M = get_vector(&m, 2*N_COUNT, -2*R, step);  //kernel m
     double *solution;
     double *h;
     double *g;
