@@ -27,8 +27,8 @@ typedef double (*Func)(double);     //type of function
 const double R = 20;            //limit of integration
 const double b = 1;             //birth coeff
 const double s = 1;             //death coeff
-const double A = 2;             //kernel parameters
-const double B = 1;             
+const double A = 20;             //kernel parameters
+const double B = 0;             
 double step;                    //step of nodes
 #ifdef SHOUT
 int sharps = 0;                 //for progress bar
@@ -353,8 +353,8 @@ int main()
     h = get_solution(1, M, W, nw);
 
     printf("***Getting solution...\n");
-    N = get_dot(W, g);
-    N = -N / (get_dot(W, h) - 1 - N);
+    N = s * get_dot(W, g);
+    N = N / (1 - s * get_dot(W, h) + N);
     solution = get_solution(N, M, W, nw);
 
     printf("\nError: %60.40lf\n", get_relative_error(solution, &sol));
