@@ -331,39 +331,39 @@ double *get_solution(double N, double *M, double *W, double nw)
 
 int str2int(const char *str)
 {
-	int i;
-	int res = 0;
-	
-	for(i = 0; str[i]; i++){
-		res *= 10;
-		res += str[i] - '0';
-	}
+    int i;
+    int res = 0;
+    
+    for(i = 0; str[i]; i++){
+        res *= 10;
+        res += str[i] - '0';
+    }
 
-	return res;
+    return res;
 }
 
 
 
 void set_values(int argc, char **argv)
 {
-	if(argc < 2){
-		return;
-	}
+    if(argc < 2){
+        return;
+    }
 
-	iters = str2int(argv[1]);
+    iters = str2int(argv[1]);
 
-	if(argc < 3){
-		return;
-	}
+    if(argc < 3){
+        return;
+    }
 
-	n_count = str2int(argv[2]);
+    n_count = str2int(argv[2]);
 }
 
 
 
 int main(int argc, char **argv)
 {
-	set_values(argc, argv);
+    set_values(argc, argv);
     step = 2 * R / (n_count - 1);
 
     double *W = get_vector(&w, n_count, -R, step);      //kernel w
