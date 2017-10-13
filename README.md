@@ -17,6 +17,6 @@ Numerical solution of the equlibrium integral equation
     - The number of iterations
     - The number of nodes in greed
     So executing of this programm looks like:
-        * ./neuman 1000 5001 *
+        ./neuman 1000 5001 
     
 **Author isn't responsible for your psycology helth that can be damaged during reading this code**
