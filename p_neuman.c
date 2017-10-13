@@ -7,14 +7,6 @@
 #define PATH "graph.plt"        //file to storing data
 #endif
 
-#ifndef N_COUNT
-#define N_COUNT 5001            //node count    
-#endif
-
-#ifndef ITERS
-#define ITERS 1000              //iterations of solving
-#endif
-
 #ifndef BAR_WIDTH
 #define BAR_WIDTH 70            //width of progress bar in chars
 #endif
@@ -24,10 +16,12 @@
 
 typedef double (*Func)(double);     //type of function
 
+int n_count = 5001;
+int iters = 1000;
 const double R = 20;            //limit of integration
 const double b = 1;             //birth coeff
 const double s = 1;             //death coeff
-const double A = 20;             //kernel parameters
+const double A = 20;            //kernel parameters
 const double B = 0;             
 double step;                    //step of nodes
 #ifdef SHOUT
@@ -93,7 +87,7 @@ double *get_vector(Func f, int size, double origin, double step)
 //get weight of node for quadrature integration
 static inline double weight(int i)
 {
-    return i == 0 || i == N_COUNT - 1 ? step/2 : step;
+    return i == 0 || i == n_count - 1 ? step/2 : step;
 }
 
 
@@ -105,11 +99,11 @@ double get_dot(const double *C, const double *W)
     int i;
 
     if(W == NULL){
-        for(i = 0; i < N_COUNT; i++){
+        for(i = 0; i < n_count; i++){
             res += C[i]*weight(i);
         }
     }else{
-        for(i = 0; i < N_COUNT; i++){
+        for(i = 0; i < n_count; i++){
             res += W[i] * C[i] * weight(i);
         }
     }
@@ -203,7 +197,7 @@ double get_diff(const double *Cn, const double *Cn_1)
     double max = 0;
     int i;
 
-    for(i = 0; i < N_COUNT; i++){
+    for(i = 0; i < n_count; i++){
         curr = fabs(Cn[i] - Cn_1[i]);
         if(curr > max){
             max = curr;
@@ -224,7 +218,7 @@ double get_relative_error(const double *Cn, Func sol)
     double x = -R;
     double f;
 
-    for(i = 0; i < N_COUNT; i++){
+    for(i = 0; i < n_count; i++){
         f = sol(x);
         curr = fabs(Cn[i] - f) / (f + 1);
         if(curr > max){
@@ -246,7 +240,7 @@ void store_solution(const double *C)
     double f;
     int i;
 
-    for(i = 0; i < N_COUNT; i++){
+    for(i = 0; i < n_count; i++){
         f = sol(x);
         fprintf(out,
             "%15.7lf %15.7lf %15.7lf %15.7lf\n",
@@ -264,7 +258,7 @@ void store_solution(const double *C)
 
 
 //iterate process
-//Nota bene: M size is 2*N_COUNT (it's extended)
+//Nota bene: M size is 2*n_count (it's extended)
 void twin_iterate(double **Cn, double **Cn_1, double *M, double *W,
     double N, double nw)
 {
@@ -276,12 +270,12 @@ void twin_iterate(double **Cn, double **Cn_1, double *M, double *W,
     *Cn = *Cn_1;
     *Cn_1 = conv;
 
-    conv = fourier_conv(M, *Cn_1, N_COUNT);
+    conv = fourier_conv(M, *Cn_1, n_count);
 
-    for(i = 0; i < N_COUNT; i++){
+    for(i = 0; i < n_count; i++){
         bswx = b + s*W[i];
-        (*Cn)[i] = (b*conv[i + N_COUNT - 1] + M[i+N_COUNT/2]*N +
-            s*(M[i+N_COUNT/2]*nw - W[i])) / bswx;
+        (*Cn)[i] = (b*conv[i + n_count - 1] + M[i+n_count/2]*N +
+            s*(M[i+n_count/2]*nw - W[i])) / bswx;
     }
 
     free(conv);
@@ -292,18 +286,18 @@ void twin_iterate(double **Cn, double **Cn_1, double *M, double *W,
 //get solution of twin_equation of current parameter N
 double *get_solution(double N, double *M, double *W, double nw)
 {
-    double *Cn = malloc(sizeof(double) * N_COUNT);  //current iteration
-    double *Cn_1 = malloc(sizeof(double)*N_COUNT);  //the last iteration
+    double *Cn = malloc(sizeof(double) * n_count);  //current iteration
+    double *Cn_1 = malloc(sizeof(double)*n_count);  //the last iteration
     int i;
 
-    Cn = get_vector(&origin, N_COUNT, -R, step);;
+    Cn = get_vector(&origin, n_count, -R, step);;
 
 #   ifdef SHOUT
     printf("Progress: ");
     fflush(stdout);
 #   endif
 
-    for(i = 0; i < ITERS; i++){
+    for(i = 0; i < iters; i++){
         //computing
         twin_iterate(&Cn, &Cn_1, M, W, N, nw);
 
@@ -312,7 +306,7 @@ double *get_solution(double N, double *M, double *W, double nw)
         printf("Iteration: %i\nDifference: %40.30f\n", i,
             get_diff(Cn, Cn_1));
 #       else
-        while(sharps < (double)BAR_WIDTH * i / ITERS){
+        while(sharps < (double)BAR_WIDTH * i / iters){
             putchar('#');
             sharps++;
         }
@@ -335,11 +329,45 @@ double *get_solution(double N, double *M, double *W, double nw)
 
 
 
-int main()
+int str2int(const char *str)
 {
-    step = 2 * R / (N_COUNT - 1);
-    double *W = get_vector(&w, N_COUNT, -R, step);      //kernel w
-    double *M = get_vector(&m, 2*N_COUNT, -2*R, step);  //kernel m
+	int i;
+	int res = 0;
+	
+	for(i = 0; str[i]; i++){
+		res *= 10;
+		res += str[i] - '0';
+	}
+
+	return res;
+}
+
+
+
+void set_values(int argc, char **argv)
+{
+	if(argc < 2){
+		return;
+	}
+
+	iters = str2int(argv[1]);
+
+	if(argc < 3){
+		return;
+	}
+
+	n_count = str2int(argv[2]);
+}
+
+
+
+int main(int argc, char **argv)
+{
+	set_values(argc, argv);
+    step = 2 * R / (n_count - 1);
+
+    double *W = get_vector(&w, n_count, -R, step);      //kernel w
+    double *M = get_vector(&m, 2*n_count, -2*R, step);  //kernel m
     double *solution;
     double *h;
     double *g;
