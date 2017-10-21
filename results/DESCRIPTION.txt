@@ -1,5 +1,9 @@
-This is a directory with graphical results. Subdirectories are named by the kernels and their parameters.
+This is a directory with graphical results.
+## Subdirectories are named by the kernels and their parameters:
 For example, 'exp_20_0' assigns to exponential kernels with parameters A=20, B=0.
 Files in subdirectories are named by the count of nodes in segment [-20; 20].
 Each graphic is a graphic of solutions: accurate - green, numerical - from blue to red, - and relative error.
 The more graphics are red, the more count of interations was used for them calculating.
+
+## Subdirectory "Error integral":
+There are graphics of error integral of iteration count in this directory (name - the count of nodes)
