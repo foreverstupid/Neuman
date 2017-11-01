@@ -23,9 +23,9 @@ double get_dot(const double *C, const double *W, int n_count, double step)
     double res = 0;
     int i;
 
-	for(i = 0; i < n_count; i++){
-		res += W[i] * C[i] * weight(i, n_count, step);
-	}
+    for(i = 0; i < n_count; i++){
+        res += W[i] * C[i] * weight(i, n_count, step);
+    }
 
     return res;
 }
@@ -38,9 +38,9 @@ double get_norm(const double *f, int n_count, double step)
     double res = 0;
     int i;
 
-	for(i = 0; i < n_count; i++){
-		res += f[i] * weight(i, n_count, step);
-	}
+    for(i = 0; i < n_count; i++){
+        res += f[i] * weight(i, n_count, step);
+    }
 
     return res;
 }
@@ -80,7 +80,7 @@ double get_diff(const double *Cn, const double *Cn_1, int n_count)
 
 //get relative C-norm of error
 double get_relative_error(const double *Cn, Func sol, int n_count,
-	double origin, double step)
+    double origin, double step)
 {
     double curr;
     double max = 0;

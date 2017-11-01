@@ -13,7 +13,7 @@
 int n_count = 5001;             //count of nodes
 int iters = 1000;               //count of iterations
 double R = 20;                  //limit of integration
-char *path = "graph.plt";		//path to store data
+char *path = "graph.plt";       //path to store data
 
 const double b = 1;             //birth coeff
 const double s = 1;             //death coeff
@@ -246,22 +246,22 @@ int str2int(const char *str)
 double str2double(const char *str)
 {
     int i;
-	double res = 0.0;
-	double hlp = 0.1;
+    double res = 0.0;
+    double hlp = 0.1;
 
-	for(i = 0; str[i] && str[i] != '.'; i++){
-		res *= 10;
-		res += str[i] - '0';
-	}
+    for(i = 0; str[i] && str[i] != '.'; i++){
+        res *= 10;
+        res += str[i] - '0';
+    }
 
-	if(str[i] == '.'){
-		for(i++; str[i]; i++){
-			res += hlp * (str[i] - '0');
-			hlp /= 10;
-		}
-	}
+    if(str[i] == '.'){
+        for(i++; str[i]; i++){
+            res += hlp * (str[i] - '0');
+            hlp /= 10;
+        }
+    }
 
-	return res;
+    return res;
 }
 
 
@@ -286,11 +286,11 @@ void set_values(int argc, char **argv)
 
     R = str2double(argv[3]);
 
-	if(argc < 5){
-		return;
-	}
+    if(argc < 5){
+        return;
+    }
 
-	path = argv[4];
+    path = argv[4];
 }
 
 
@@ -320,9 +320,9 @@ int main(int argc, char **argv)
     solution = get_solution(N, M, W, nw);
 
     printf(
-		"\nError: %60.40lf\n",
-		get_relative_error(solution, &sol, n_count, -R, step)
-	);
+        "\nError: %60.40lf\n",
+        get_relative_error(solution, &sol, n_count, -R, step)
+    );
     store_solution(solution, path);
 
     free(M);
