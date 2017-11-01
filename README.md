@@ -1,5 +1,13 @@
 # Neuman
 Numerical solution of the equlibrium integral equation
+
+## Neded files
+    main.c
+    vecs.h
+    vecs.c
+    Makefile
+    
+    (others files are rubbish)
     
 ## Compiling flags:
     -DSHOUT - turn off full info and turn on progress bar
